@@ -3,7 +3,7 @@ const sendEmail = require('./../../utils/email');
 const { google } = require('googleapis');
 const path = require('path');
 
-exports.handler = schedule('18 10 * * *', async (event, context) => {
+exports.handler = schedule('13 11 * * *', async (event, context) => {
     try {
         console.log("Cron job started!");
         function delay(ms) {
@@ -13,8 +13,9 @@ exports.handler = schedule('18 10 * * *', async (event, context) => {
         const now = new Date().toJSON().slice(5, 10);
         const today = new Date().toJSON().slice(0, 10);
 
+        const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
         const auth = new google.auth.GoogleAuth({
-            keyFile: path.resolve(__dirname, '../../cred.json'),
+            credentials,
             scopes: "https://www.googleapis.com/auth/spreadsheets",
         });
 
