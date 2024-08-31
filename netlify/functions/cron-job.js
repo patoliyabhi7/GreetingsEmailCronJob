@@ -3,7 +3,7 @@ const sendEmail = require('./../../utils/email');
 const { google } = require('googleapis');
 const path = require('path');
 
-exports.handler = schedule('36 11 * * *', async (event, context) => {
+exports.handler = schedule('40 11 * * *', async (event, context) => {
     try {
         console.log("Cron job started!");
         function delay(ms) {
