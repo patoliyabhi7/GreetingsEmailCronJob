@@ -3,7 +3,7 @@ const sendEmail = require('./../../utils/email');
 const { google } = require('googleapis');
 const path = require('path');
 
-exports.handler = schedule('13 11 * * *', async (event, context) => {
+exports.handler = schedule('36 11 * * *', async (event, context) => {
     try {
         console.log("Cron job started!");
         function delay(ms) {
@@ -57,11 +57,11 @@ Team Movya Infotech`,
                         } catch (error) {
                             console.error(`Error sending email: ${error}`);
                         }
-                        await delay(5000);
+                        await delay(2000);
                     }
                 }
             });
-        await delay(5000);
+        await delay(2000);
 
         // Anniversary wish using Google Sheets
         const anniversary = getRows.data.values.filter(
@@ -89,11 +89,11 @@ Team Movya Infotech`
                         } catch (error) {
                             console.error(`Error sending email: ${error}`);
                         }
-                        await delay(5000);
+                        await delay(2000);
                     }
                 }
             });
-        await delay(5000);
+        await delay(2000);
 
         // Festival wish using Google Sheets
         const getFesRows = await googleSheets.spreadsheets.values.get({
@@ -131,7 +131,7 @@ Team Movya Infotech`
                         }
 
                         // Add a delay of 2 seconds between emails
-                        await delay(5000);
+                        await delay(2000);
                     }
                 }
             }
