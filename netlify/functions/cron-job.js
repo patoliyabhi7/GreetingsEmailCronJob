@@ -1,11 +1,11 @@
 const { schedule } = require('@netlify/functions');
 const sendEmail = require('./../../utils/email');
 const { google } = require('googleapis');
-const path = require('path');
 
-exports.handler = schedule('40 11 * * *', async (event, context) => {
+exports.handler = schedule('32 12 * * *', async (event, context) => {
     try {
         console.log("Cron job started!");
+
         function delay(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
@@ -57,11 +57,11 @@ Team Movya Infotech`,
                         } catch (error) {
                             console.error(`Error sending email: ${error}`);
                         }
-                        await delay(2000);
+                        await delay(5000);
                     }
                 }
             });
-        await delay(2000);
+        await delay(5000);
 
         // Anniversary wish using Google Sheets
         const anniversary = getRows.data.values.filter(
@@ -86,14 +86,15 @@ Thank you for your continued commitment, and here’s to celebrating more milest
 Best wishes,
 Team Movya Infotech`
                             });
+                            console.log("anniversary email sent", row[2]);
                         } catch (error) {
                             console.error(`Error sending email: ${error}`);
                         }
-                        await delay(2000);
+                        await delay(5000);
                     }
                 }
             });
-        await delay(2000);
+        await delay(5000);
 
         // Festival wish using Google Sheets
         const getFesRows = await googleSheets.spreadsheets.values.get({
@@ -126,12 +127,13 @@ Wishing you a wonderful ${festival_name}!
 Best wishes,
 Team Movya Infotech`
                             });
+                            console.log("festival email sent", user[2]);
                         } catch (error) {
                             console.error(`Error sending email: ${error}`);
                         }
 
                         // Add a delay of 2 seconds between emails
-                        await delay(2000);
+                        await delay(5000);
                     }
                 }
             }
