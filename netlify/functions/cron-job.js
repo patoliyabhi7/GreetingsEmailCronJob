@@ -2,7 +2,7 @@ const { schedule } = require('@netlify/functions');
 const sendEmail = require('./../../utils/email');
 const { google } = require('googleapis');
 
-exports.handler = schedule('37 12 * * *', async (event, context) => {
+exports.handler = schedule('52 12 * * *', async (event, context) => {
     try {
         console.log("Cron job started!");
 
