@@ -1,0 +1,30 @@
+{
+  "name": "email-birthday-wish",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon server.js",
+    "build": "echo 'This app does not need a build step'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@netlify/functions": "^2.8.1",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "google-auth-library": "^9.14.0",
+    "google-spreadsheet": "^4.1.2",
+    "googleapis": "^143.0.0",
+    "netlify-cli": "^17.34.3",
+    "netlify-lambda": "^2.0.16",
+    "node-cron": "^3.0.3",
+    "nodemailer": "^6.9.14",
+    "nodemon": "^3.1.4",
+    "open": "^10.1.0",
+    "serverless-http": "^3.2.0",
+    "xlsx": "^0.18.5"
+  }
+}
