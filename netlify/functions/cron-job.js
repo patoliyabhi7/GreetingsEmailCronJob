@@ -103,7 +103,43 @@ Team Movya Infotech`
             range: "Sheet1",
         });
 
-        const festivals = getFesRows.data.values.filter(async (row) => {
+        //         const festivals = getFesRows.data.values.filter(async (row) => {
+        //             if (row[1] === today) {
+        //                 const festival_name = row[0];
+        //                 const userRecords = getRows.data.values.slice(1);
+
+        //                 for (const user of userRecords) {
+        //                     if (user[2]) {
+        //                         const userFname = user[1].split(' ')[0];
+
+        //                         try {
+        //                             await sendEmail({
+        //                                 email: user[2],
+        //                                 subject: `Happy ${festival_name}, ${userFname}!`,
+        //                                 message: `Dear ${user[1]},
+
+        // As ${festival_name} approaches, I wanted to extend my heartfelt wishes to you and your loved ones. May this festive season bring you joy, peace, and prosperity.
+
+        // Let’s take this opportunity to celebrate, reflect, and recharge. I hope you enjoy the festivities and create beautiful memories with those who matter most.
+
+        // Wishing you a wonderful ${festival_name}!
+
+        // Best wishes,
+        // Team Movya Infotech`
+        //                             });
+        //                             console.log("festival email sent", user[2]);
+        //                             await delay(2000);
+        //                         } catch (error) {
+        //                             console.error(`Error sending email: ${error}`);
+        //                         }
+
+        //                         // Add a delay of 2 seconds between emails
+        //                     }
+        //                 }
+        //             }
+        //         });
+        const festivals = getFesRows.data.values;
+        for (const row of festivals) {
             if (row[1] === today) {
                 const festival_name = row[0];
                 const userRecords = getRows.data.values.slice(1);
@@ -119,11 +155,11 @@ Team Movya Infotech`
                                 message: `Dear ${user[1]},
 
 As ${festival_name} approaches, I wanted to extend my heartfelt wishes to you and your loved ones. May this festive season bring you joy, peace, and prosperity.
-        
+    
 Let’s take this opportunity to celebrate, reflect, and recharge. I hope you enjoy the festivities and create beautiful memories with those who matter most.
-        
+    
 Wishing you a wonderful ${festival_name}!
-        
+    
 Best wishes,
 Team Movya Infotech`
                             });
@@ -132,12 +168,10 @@ Team Movya Infotech`
                         } catch (error) {
                             console.error(`Error sending email: ${error}`);
                         }
-
-                        // Add a delay of 2 seconds between emails
                     }
                 }
             }
-        });
+        }
     } catch (error) {
         console.log("Error in cron job:", error);
         return {
