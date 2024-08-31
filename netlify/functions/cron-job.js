@@ -2,7 +2,7 @@ const { schedule } = require('@netlify/functions');
 const sendEmail = require('./../../utils/email');
 const { google } = require('googleapis');
 
-exports.handler = schedule('32 12 * * *', async (event, context) => {
+exports.handler = schedule('37 12 * * *', async (event, context) => {
     try {
         console.log("Cron job started!");
 
@@ -24,6 +24,16 @@ exports.handler = schedule('32 12 * * *', async (event, context) => {
 
         const spreadsheetId = "1psDuyomhJh80g4sKzlt3n2kdLip6eLAUmj8sDKocF90";
         const festivalSheetId = "1C-4dBkF91gh3Ag-MxYo7jVCQMjN831gdqcSfDrmOjzw";
+        const mailLogSheetId = "1Hmz50dmt7OXGeMpJphrZbX63FuER4wSuVkkyz3qohDY";
+
+        // Fetch existing mail logs
+        const getMailLogs = await googleSheets.spreadsheets.values.get({
+            auth,
+            spreadsheetId: mailLogSheetId,
+            range: "Sheet1",
+        });
+
+        const mailLogs = getMailLogs.data.values || [];
 
         // Birthday wish using Google Sheets
         const getRows = await googleSheets.spreadsheets.values.get({
