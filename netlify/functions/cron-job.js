@@ -54,7 +54,7 @@ Team Movya Infotech`,
                                 // filePath: "./Google.pdf"
                             });
                             console.log("bday email sent", row[2]);
-                            await delay(2000);
+                            await delay(5000);
                         } catch (error) {
                             console.error(`Error sending email: ${error}`);
                         }
@@ -87,7 +87,7 @@ Best wishes,
 Team Movya Infotech`
                             });
                             console.log("anniversary email sent", row[2]);
-                            await delay(2000);
+                            await delay(5000);
                         } catch (error) {
                             console.error(`Error sending email: ${error}`);
                         }
@@ -164,7 +164,7 @@ Best wishes,
 Team Movya Infotech`
                             });
                             console.log("festival email sent", user[2]);
-                            await delay(2000);
+                            await delay(5000);
                         } catch (error) {
                             console.error(`Error sending email: ${error}`);
                         }
