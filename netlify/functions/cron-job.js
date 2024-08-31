@@ -24,16 +24,6 @@ exports.handler = schedule('37 12 * * *', async (event, context) => {
 
         const spreadsheetId = "1psDuyomhJh80g4sKzlt3n2kdLip6eLAUmj8sDKocF90";
         const festivalSheetId = "1C-4dBkF91gh3Ag-MxYo7jVCQMjN831gdqcSfDrmOjzw";
-        const mailLogSheetId = "1Hmz50dmt7OXGeMpJphrZbX63FuER4wSuVkkyz3qohDY";
-
-        // Fetch existing mail logs
-        const getMailLogs = await googleSheets.spreadsheets.values.get({
-            auth,
-            spreadsheetId: mailLogSheetId,
-            range: "Sheet1",
-        });
-
-        const mailLogs = getMailLogs.data.values || [];
 
         // Birthday wish using Google Sheets
         const getRows = await googleSheets.spreadsheets.values.get({
@@ -64,14 +54,14 @@ Team Movya Infotech`,
                                 // filePath: "./Google.pdf"
                             });
                             console.log("bday email sent", row[2]);
+                            await delay(2000);
                         } catch (error) {
                             console.error(`Error sending email: ${error}`);
                         }
-                        await delay(5000);
                     }
                 }
             });
-        await delay(5000);
+        // await delay(5000);
 
         // Anniversary wish using Google Sheets
         const anniversary = getRows.data.values.filter(
@@ -97,10 +87,10 @@ Best wishes,
 Team Movya Infotech`
                             });
                             console.log("anniversary email sent", row[2]);
+                            await delay(2000);
                         } catch (error) {
                             console.error(`Error sending email: ${error}`);
                         }
-                        await delay(5000);
                     }
                 }
             });
@@ -138,12 +128,12 @@ Best wishes,
 Team Movya Infotech`
                             });
                             console.log("festival email sent", user[2]);
+                            await delay(2000);
                         } catch (error) {
                             console.error(`Error sending email: ${error}`);
                         }
 
                         // Add a delay of 2 seconds between emails
-                        await delay(5000);
                     }
                 }
             }
