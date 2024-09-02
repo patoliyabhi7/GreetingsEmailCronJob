@@ -446,7 +446,6 @@ async function sendEmailWithRetry(emailOptions, retries = 3, delayMs = 2000) {
                             });
                             await logEmailSent(categoryKey, today, userEmail);
                             console.log(`${categoryKey} email sent to ${userEmail}`);
-                            await delay(5000);
                         } catch (error) {
                             console.error(`Error sending ${categoryKey} email to ${userEmail}: ${error.message}`);
                         }
@@ -502,7 +501,6 @@ async function sendEmailWithRetry(emailOptions, retries = 3, delayMs = 2000) {
                             });
                             await logEmailSent(categoryKey, today, userEmail, festivalName);
                             console.log(`${categoryKey} ${festivalName} email sent to ${userEmail}`);
-                            await delay(5000);
                         } catch (error) {
                             console.error(`Error sending ${categoryKey} email to ${userEmail}: ${error.message}`);
                         }
