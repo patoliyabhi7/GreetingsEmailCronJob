@@ -2,7 +2,7 @@ const { schedule } = require('@netlify/functions');
 const sendEmail = require('./../../utils/email');
 const { google } = require('googleapis');
 
-exports.handler = schedule('13 5 * * *', async (event, context) => {
+exports.handler = schedule('15 5 * * *', async (event, context) => {
     try {
         console.log("Cron job started!");
 
@@ -51,6 +51,7 @@ Best wishes,
 Team Movya Infotech`,
                             });
                             console.log("bday email sent", row[2]);
+                            delay(2000);
                         } catch (error) {
                             console.error(`Error sending email: ${error}`);
                         }
