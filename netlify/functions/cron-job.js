@@ -20,11 +20,11 @@ async function sendEmailWithRetry(emailOptions, retries = 3, delayMs = 2000) {
     }
 }
 
-exports.handler = schedule('*/3 * * * *', async (event, context) => {
+exports.handler = schedule('30 16 * * *', async (event, context) => {
     try {
-        // function delay(ms) {
-        //     return new Promise(resolve => setTimeout(resolve, ms));
-        // }
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
 
         const now = new Date().toJSON().slice(5, 10);
         const today = new Date().toJSON().slice(0, 10);
@@ -131,6 +131,7 @@ exports.handler = schedule('*/3 * * * *', async (event, context) => {
                             });
                             await logEmailSent(categoryKey, today, userEmail);
                             console.log(`${categoryKey} email sent to ${userEmail}`);
+                            await delay(2000);
                         } catch (error) {
                             console.error(`Error sending ${categoryKey} email to ${userEmail}: ${error.message}`);
                         }
@@ -186,6 +187,7 @@ exports.handler = schedule('*/3 * * * *', async (event, context) => {
                             });
                             await logEmailSent(categoryKey, today, userEmail, festivalName);
                             console.log(`${categoryKey} ${festivalName} email sent to ${userEmail}`);
+                            await delay(2000);
                         } catch (error) {
                             console.error(`Error sending ${categoryKey} email to ${userEmail}: ${error.message}`);
                         }
