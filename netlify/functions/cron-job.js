@@ -20,7 +20,7 @@ async function sendEmailWithRetry(emailOptions, retries = 3, delayMs = 2000) {
     }
 }
 
-exports.handler = schedule('19 5 * * *', async (event, context) => {
+exports.handler = schedule('21 6 * * *', async (event, context) => {
     try {
         console.log("Cron job started!");
 
