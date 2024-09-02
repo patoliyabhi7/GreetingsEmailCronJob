@@ -2,7 +2,7 @@ const { schedule } = require('@netlify/functions');
 const sendEmail = require('./../../utils/email');
 const { google } = require('googleapis');
 
-exports.handler = schedule('37 5 * * *', async (event, context) => {
+exports.handler = schedule('45 5 * * *', async (event, context) => {
     try {
         console.log("Cron job started!");
 
@@ -29,57 +29,55 @@ exports.handler = schedule('37 5 * * *', async (event, context) => {
         });
 
         // Send Birthday and Anniversary Emails in Parallel
-        const emailPromises = getRows.data.values.map(async (row) => {
-            const userFname = row[1].split(' ')[0];
-
-            // Birthday Email
+        // Birthday Emails
+        const birthdayPromises = getRows.data.values.map(async (row) => {
             if (row[3].slice(5) === now && row[2]) {
-                return sendEmail({
-                    email: row[2],
-                    subject: `Happy Birthday, ${userFname}!`,
-                    message: `Dear ${row[1]},
-    
-Wishing you a very happy birthday! 🎉 May your day be filled with joy, laughter, and celebration. We are grateful to have you as part of our team and hope this year brings you continued success and happiness.
-            
-Enjoy your special day!
-    
-Best wishes,
-Team Movya Infotech`,
-                }).then(() => console.log("bday email sent", row[2]));
-            }
-
-            // Anniversary Email
-            if (row[4].slice(5) === now && row[2]) {
-                const years = new Date().getFullYear() - new Date(row[4]).getFullYear();
-                const abb = years === 1 ? 'st' : years === 2 ? 'nd' : years === 3 ? 'rd' : 'th';
-                return sendEmail({
-                    email: row[2],
-                    subject: `Happy Work Anniversary, ${userFname}!`,
-                    message: `Dear ${row[1]},
-    
-Congratulations on your ${years}${abb} work anniversary! 🎉
-    
-Your dedication, hard work, and contributions have been instrumental to our success. We are grateful to have you as part of our team and look forward to many more successful years together.
-    
-Thank you for your continued commitment, and here’s to celebrating more milestones in the future!
-    
-Best wishes,
-Team Movya Infotech`,
-                }).then(() => console.log("anniversary email sent", row[2]));
+                const userFname = row[1].split(' ')[0];
+                try {
+                    await sendEmail({
+                        email: row[2],
+                        subject: `Happy Birthday, ${userFname}!`,
+                        message: `Dear ${row[1]},
+Wishing you a very happy birthday! 🎉...`,
+                    });
+                    console.log("Birthday email sent", row[2]);
+                } catch (error) {
+                    console.error(`Error sending birthday email: ${error}`);
+                }
             }
         });
 
-        await Promise.all(emailPromises);
+        await Promise.all(birthdayPromises);
 
+        // Anniversary Emails
+        const anniversaryPromises = getRows.data.values.map(async (row) => {
+            if (row[4].slice(5) === now && row[2]) {
+                const userFname = row[1].split(' ')[0];
+                const years = new Date().getFullYear() - new Date(row[4]).getFullYear();
+                const abb = years === 1 ? 'st' : years === 2 ? 'nd' : years === 3 ? 'rd' : 'th';
+                try {
+                    await sendEmail({
+                        email: row[2],
+                        subject: `Happy Work Anniversary, ${userFname}!`,
+                        message: `Dear ${row[1]},
+Congratulations on your ${years}${abb} work anniversary! 🎉...`,
+                    });
+                    console.log("Anniversary email sent", row[2]);
+                } catch (error) {
+                    console.error(`Error sending anniversary email: ${error}`);
+                }
+            }
+        });
 
-        // Festival wish using Google Sheets
+        await Promise.all(anniversaryPromises);
+
+        // Festival Emails
         const getFesRows = await googleSheets.spreadsheets.values.get({
             auth,
             spreadsheetId: festivalSheetId,
             range: "Sheet1",
         });
 
-        // Send Festival Emails
         const festivalPromises = getFesRows.data.values.map(async (row) => {
             if (row[1] === today) {
                 const festival_name = row[0];
@@ -88,20 +86,17 @@ Team Movya Infotech`,
                 return Promise.all(userRecords.map(async (user) => {
                     if (user[2]) {
                         const userFname = user[1].split(' ')[0];
-                        return sendEmail({
-                            email: user[2],
-                            subject: `Happy ${festival_name}, ${userFname}!`,
-                            message: `Dear ${user[1]},
-
-As ${festival_name} approaches, I wanted to extend my heartfelt wishes to you and your loved ones. May this festive season bring you joy, peace, and prosperity.
-
-Let’s take this opportunity to celebrate, reflect, and recharge. I hope you enjoy the festivities and create beautiful memories with those who matter most.
-
-Wishing you a wonderful ${festival_name}!
-
-Best wishes,
-Team Movya Infotech`,
-                        }).then(() => console.log("festival email sent", user[2]));
+                        try {
+                            await sendEmail({
+                                email: user[2],
+                                subject: `Happy ${festival_name}, ${userFname}!`,
+                                message: `Dear ${user[1]},
+As ${festival_name} approaches...`,
+                            });
+                            console.log("Festival email sent", user[2]);
+                        } catch (error) {
+                            console.error(`Error sending festival email: ${error}`);
+                        }
                     }
                 }));
             }
