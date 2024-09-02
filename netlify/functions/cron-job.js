@@ -28,6 +28,7 @@ exports.handler = schedule('* * * * *', async (event, context) => {
 
         const now = new Date().toJSON().slice(5, 10);
         const today = new Date().toJSON().slice(0, 10);
+        const dateTimeNow = new Date.toJSON();
 
         const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
 
@@ -129,7 +130,7 @@ exports.handler = schedule('* * * * *', async (event, context) => {
                                 subject,
                                 message,
                             });
-                            await logEmailSent(categoryKey, date.now(), userEmail);
+                            await logEmailSent(categoryKey, Date.now(), userEmail);
                             console.log(`${categoryKey} email sent to ${userEmail}`);
                         } catch (error) {
                             console.error(`Error sending ${categoryKey} email to ${userEmail}: ${error.message}`);
@@ -184,7 +185,7 @@ exports.handler = schedule('* * * * *', async (event, context) => {
                                 subject,
                                 message,
                             });
-                            await logEmailSent(categoryKey, date.now(), userEmail, festivalName);
+                            await logEmailSent(categoryKey, Date.now(), userEmail, festivalName);
                             console.log(`${categoryKey} ${festivalName} email sent to ${userEmail}`);
                         } catch (error) {
                             console.error(`Error sending ${categoryKey} email to ${userEmail}: ${error.message}`);
