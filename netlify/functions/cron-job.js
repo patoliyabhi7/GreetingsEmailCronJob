@@ -20,7 +20,7 @@ async function sendEmailWithRetry(emailOptions, retries = 3, delayMs = 2000) {
     }
 }
 
-exports.handler = schedule('39 10 * * *', async (event, context) => {
+exports.handler = schedule('43 10 * * *', async (event, context) => {
     try {
         function delay(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
@@ -101,7 +101,7 @@ exports.handler = schedule('39 10 * * *', async (event, context) => {
         };
 
         const sendEmailsInChunks = async (rows, category) => {
-            const chunks = emailChunks(rows, 2); // Adjust chunk size as needed
+            const chunks = emailChunks(rows, 1); // Adjust chunk size as needed
 
             for (const chunk of chunks) {
                 const emailPromises = chunk.map(async (row) => {
@@ -149,7 +149,7 @@ exports.handler = schedule('39 10 * * *', async (event, context) => {
 
 
         const sendFesEmailsInChunks = async (rows, category, festivalName = '') => {
-            const chunks = emailChunks(rows, 2); // Adjust chunk size as needed
+            const chunks = emailChunks(rows, 1); // Adjust chunk size as needed
 
             for (const chunk of chunks) {
                 const emailPromises = chunk.map(async (row) => {
