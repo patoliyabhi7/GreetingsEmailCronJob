@@ -2,7 +2,7 @@ const { schedule } = require('@netlify/functions');
 const sendEmail = require('./../../utils/email');
 const { google } = require('googleapis');
 
-exports.handler = schedule('56 4 * * *', async (event, context) => {
+exports.handler = schedule('6 5 * * *', async (event, context) => {
     try {
         console.log("Cron job started!");
 
@@ -54,7 +54,7 @@ Team Movya Infotech`,
                                 // filePath: "./Google.pdf"
                             });
                             console.log("bday email sent", row[2]);
-                            await delay(5000);
+                            // await delay(5000);
                         } catch (error) {
                             console.error(`Error sending email: ${error}`);
                         }
@@ -87,14 +87,14 @@ Best wishes,
 Team Movya Infotech`
                             });
                             console.log("anniversary email sent", row[2]);
-                            await delay(5000);
+                            // await delay(5000);
                         } catch (error) {
                             console.error(`Error sending email: ${error}`);
                         }
                     }
                 }
             });
-        await delay(5000);
+        // await delay(5000);
 
         // Festival wish using Google Sheets
         const getFesRows = await googleSheets.spreadsheets.values.get({
@@ -128,7 +128,7 @@ Best wishes,
 Team Movya Infotech`
                             });
                             console.log("festival email sent", user[2]);
-                            await delay(2000);
+                            // await delay(2000);
                         } catch (error) {
                             console.error(`Error sending email: ${error}`);
                         }
