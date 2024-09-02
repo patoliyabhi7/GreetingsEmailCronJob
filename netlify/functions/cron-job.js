@@ -28,7 +28,6 @@ exports.handler = schedule('* * * * *', async (event, context) => {
 
         const now = new Date().toJSON().slice(5, 10);
         const today = new Date().toJSON().slice(0, 10);
-        const dateTimeNow = new Date.toJSON();
 
         const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
 
