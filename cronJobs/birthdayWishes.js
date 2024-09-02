@@ -321,187 +321,121 @@ const { google } = require('googleapis');
 //     }
 // })();
 
+async function sendEmailWithRetry(emailOptions, retries = 3, delayMs = 2000) {
+    for (let attempt = 1; attempt <= retries; attempt++) {
+        try {
+            await sendEmail(emailOptions);
+            console.log(`Email sent to ${emailOptions.email} on attempt ${attempt}`);
+            return;
+        } catch (error) {
+            console.error(`Attempt ${attempt} failed: ${error.message}`);
+            if (attempt < retries) {
+                console.log(`Retrying in ${delayMs}ms...`);
+                await new Promise(res => setTimeout(res, delayMs));
+            } else {
+                throw new Error(`Failed to send email after ${retries} attempts`);
+            }
+        }
+    }
+}
 
-// (async () => {
-//     try {
-//         console.log("Cron job started!");
 
-//         function delay(ms) {
-//             return new Promise(resolve => setTimeout(resolve, ms));
-//         }
 
-//         const now = new Date().toJSON().slice(5, 10);
-//         const today = new Date().toJSON().slice(0, 10);
+(async () => {
+    try {
+        console.log("Cron job started!");
 
-//         const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
-//         const auth = new google.auth.GoogleAuth({
-//             credentials,
-//             scopes: "https://www.googleapis.com/auth/spreadsheets",
-//         });
+        const now = new Date().toJSON().slice(5, 10);
+        const today = new Date().toJSON().slice(0, 10);
 
-//         const client = await auth.getClient();
-//         const googleSheets = google.sheets({ version: "v4", auth: client });
+        const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
+        const auth = new google.auth.GoogleAuth({
+            credentials,
+            scopes: "https://www.googleapis.com/auth/spreadsheets",
+        });
 
-//         const spreadsheetId = "1psDuyomhJh80g4sKzlt3n2kdLip6eLAUmj8sDKocF90";
-//         const festivalSheetId = "1C-4dBkF91gh3Ag-MxYo7jVCQMjN831gdqcSfDrmOjzw";
+        const client = await auth.getClient();
+        const googleSheets = google.sheets({ version: "v4", auth: client });
 
-//         // Birthday wish using Google Sheets
-//         const getRows = await googleSheets.spreadsheets.values.get({
-//             auth,
-//             spreadsheetId,
-//             range: "Sheet1",
-//         });
+        const spreadsheetId = "1psDuyomhJh80g4sKzlt3n2kdLip6eLAUmj8sDKocF90";
+        const festivalSheetId = "1C-4dBkF91gh3Ag-MxYo7jVCQMjN831gdqcSfDrmOjzw";
 
-//         const bday = getRows.data.values.filter(
-//             async (row) => {
-//                 if (row[3].slice(5) == now) {
-//                     if (row[2]) {
-//                         const userFname = row[1].split(' ')[0];
-//                         try {
-//                             await sendEmail({
-//                                 email: row[2],
-//                                 subject: `Happy Birthday, ${userFname}!`,
-//                                 message: `Dear ${row[1]},
-    
-// Wishing you a very happy birthday! 🎉 May your day be filled with joy, laughter, and celebration. We are grateful to have you as part of our team and hope this year brings you continued success and happiness.
-            
-// Enjoy your special day!
-    
-// Best wishes,
-// Team Movya Infotech`,
-//                                 // If wants to add attachments
-//                                 // fileName: "demo.pdf",
-//                                 // filePath: "./Google.pdf"
-//                             });
-//                             console.log("bday email sent", row[2]);
-//                             await delay(5000);
-//                         } catch (error) {
-//                             console.error(`Error sending email: ${error}`);
-//                         }
-//                     }
-//                 }
-//             });
-//         // await delay(5000);
+        // Fetch Birthday Data
+        const getRows = await googleSheets.spreadsheets.values.get({
+            auth,
+            spreadsheetId,
+            range: "Sheet1",
+        });
 
-//         // Anniversary wish using Google Sheets
-//         const anniversary = getRows.data.values.filter(
-//             async (row) => {
-//                 if (row[4].slice(5) == now) {
-//                     if (row[2]) {
-//                         const userFname = row[1].split(' ')[0];
-//                         const years = new Date().getFullYear() - new Date(row[4]).getFullYear();
-//                         const abb = years === 1 ? 'st' : years === 2 ? 'nd' : years === 3 ? 'rd' : 'th';
-//                         try {
-//                             await sendEmail({
-//                                 email: row[2],
-//                                 subject: `Happy Work Anniversary, ${userFname}!`,
-//                                 message: `Dear ${row[1]},
-    
-// Congratulations on your ${years}${abb} work anniversary! 🎉
-    
-// Your dedication, hard work, and contributions have been instrumental to our success. We are grateful to have you as part of our team and look forward to many more successful years together.
-    
-// Thank you for your continued commitment, and here’s to celebrating more milestones in the future!
-    
-// Best wishes,
-// Team Movya Infotech`
-//                             });
-//                             console.log("anniversary email sent", row[2]);
-//                             await delay(5000);
-//                         } catch (error) {
-//                             console.error(`Error sending email: ${error}`);
-//                         }
-//                     }
-//                 }
-//             });
-//         await delay(5000);
+        // Send Birthday Emails
+        const birthdayPromises = getRows.data.values.map(async (row) => {
+            if (row[3].slice(5) === now && row[2]) {
+                const userFname = row[1].split(' ')[0];
+                return sendEmailWithRetry({
+                    email: row[2],
+                    subject: `Happy Birthday, ${userFname}!`,
+                    message: `Dear ${row[1]},
+Wishing you a very happy birthday! 🎉...`,
+                });
+            }
+        });
 
-//         // Festival wish using Google Sheets
-//         const getFesRows = await googleSheets.spreadsheets.values.get({
-//             auth,
-//             spreadsheetId: festivalSheetId,
-//             range: "Sheet1",
-//         });
+        await Promise.all(birthdayPromises);
 
-//         const festivals = getFesRows.data.values.filter(async (row) => {
-//             if (row[1] === today) {
-//                 const festival_name = row[0];
-//                 const userRecords = getRows.data.values.slice(1);
+        // Fetch Anniversary Data
+        const anniversaryPromises = getRows.data.values.map(async (row) => {
+            if (row[4].slice(5) === now && row[2]) {
+                const userFname = row[1].split(' ')[0];
+                const years = new Date().getFullYear() - new Date(row[4]).getFullYear();
+                const abb = years === 1 ? 'st' : years === 2 ? 'nd' : years === 3 ? 'rd' : 'th';
+                return sendEmailWithRetry({
+                    email: row[2],
+                    subject: `Happy Work Anniversary, ${userFname}!`,
+                    message: `Dear ${row[1]},
+Congratulations on your ${years}${abb} work anniversary! 🎉...`,
+                });
+            }
+        });
 
-//                 for (const user of userRecords) {
-//                     if (user[2]) {
-//                         const userFname = user[1].split(' ')[0];
+        await Promise.all(anniversaryPromises);
 
-//                         try {
-//                             await sendEmail({
-//                                 email: user[2],
-//                                 subject: `Happy ${festival_name}, ${userFname}!`,
-//                                 message: `Dear ${user[1]},
+        // Fetch Festival Data
+        const getFesRows = await googleSheets.spreadsheets.values.get({
+            auth,
+            spreadsheetId: festivalSheetId,
+            range: "Sheet1",
+        });
 
-// As ${festival_name} approaches, I wanted to extend my heartfelt wishes to you and your loved ones. May this festive season bring you joy, peace, and prosperity.
+        const festivalPromises = getFesRows.data.values.map(async (row) => {
+            if (row[1] === today) {
+                const festival_name = row[0];
+                const userRecords = getRows.data.values.slice(1);
 
-// Let’s take this opportunity to celebrate, reflect, and recharge. I hope you enjoy the festivities and create beautiful memories with those who matter most.
+                return Promise.all(userRecords.map(async (user) => {
+                    if (user[2]) {
+                        const userFname = user[1].split(' ')[0];
+                        return sendEmailWithRetry({
+                            email: user[2],
+                            subject: `Happy ${festival_name}, ${userFname}!`,
+                            message: `Dear ${user[1]},
+As ${festival_name} approaches...`,
+                        });
+                    }
+                }));
+            }
+        });
 
-// Wishing you a wonderful ${festival_name}!
+        await Promise.all(festivalPromises);
 
-// Best wishes,
-// Team Movya Infotech`
-//                             });
-//                             console.log("festival email sent", user[2]);
-//                             await delay(2000);
-//                         } catch (error) {
-//                             console.error(`Error sending email: ${error}`);
-//                         }
-
-//                     }
-//                 }
-//             }
-//         });
-
-//         //using for of
-//         //         const festivals = getFesRows.data.values;
-//         //         for (const row of festivals) {
-//         //             if (row[1] === today) {
-//         //                 const festival_name = row[0];
-//         //                 const userRecords = getRows.data.values.slice(1);
-
-//         //                 for (const user of userRecords) {
-//         //                     if (user[2]) {
-//         //                         const userFname = user[1].split(' ')[0];
-
-//         //                         try {
-//         //                             await sendEmail({
-//         //                                 email: user[2],
-//         //                                 subject: `Happy ${festival_name}, ${userFname}!`,
-//         //                                 message: `Dear ${user[1]},
-
-//         // As ${festival_name} approaches, I wanted to extend my heartfelt wishes to you and your loved ones. May this festive season bring you joy, peace, and prosperity.
-
-//         // Let’s take this opportunity to celebrate, reflect, and recharge. I hope you enjoy the festivities and create beautiful memories with those who matter most.
-
-//         // Wishing you a wonderful ${festival_name}!
-
-//         // Best wishes,
-//         // Team Movya Infotech`
-//         //                             });
-//         //                             console.log("festival email sent", user[2]);
-//         //                             await delay(5000);
-//         //                         } catch (error) {
-//         //                             console.error(`Error sending email: ${error}`);
-//         //                         }
-//         //                     }
-//         //                 }
-//         //             }
-//         //         }
-//     } catch (error) {
-//         console.log("Error in cron job:", error);
-//         return {
-//             statusCode: 500,
-//             body: JSON.stringify({ error: "Internal Server Error" }),
-//         };
-//     }
-//     return {
-//         statusCode: 200,
-//         body: JSON.stringify({ message: 'Cron job executed successfully!' }),
-//     };
-// })();
+    } catch (error) {
+        console.error("Error in cron job:", error);
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ error: "Internal Server Error" }),
+        };
+    }
+    return {
+        statusCode: 200,
+        body: JSON.stringify({ message: 'Cron job executed successfully!' }),
+    };
+})();
