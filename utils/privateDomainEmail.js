@@ -3,14 +3,24 @@ const nodemailer = require('nodemailer');
 const sendEmail = async (options) => {
     try {
         const transporter = nodemailer.createTransport({
-            service: 'Gmail',
+            name: 'movya.com',
+            host: 'shared67.accountservergroup.com',
+            port: 465,
+            secure: true,
             auth: {
                 user: process.env.EMAIL_USERNAME,
                 pass: process.env.EMAIL_PASSWORD
             }
         });
 
+        transporter.verify(function (error, success) {
+            if (error) {
+                console.log(error);
+            }
+        });
+
         const mailOptions = {
+            from: `Abhi Movya <${process.env.EMAIL_USERNAME}>`,
             to: options.email,
             subject: options.subject,
             text: options.message,
@@ -24,7 +34,6 @@ const sendEmail = async (options) => {
             }];
         }
 
-        // Send the email
         await transporter.sendMail(mailOptions);
     } catch (error) {
         console.error("Error sending email:", error);
