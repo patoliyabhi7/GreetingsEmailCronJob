@@ -220,13 +220,11 @@ exports.handler = schedule('*/2 3-6 * * *', async (event, context) => {
         });
 
         const festivals = getFesRows.data.values.filter(row => row[1] === today);
-        // console.log(festivals);
 
         for (const festival of festivals) {
             const festivalName = festival[0];
             await sendFesEmailsInChunks(rows.slice(1), 'festival', festivalName);
         }
-        console.log("All emails sent")
     } catch (error) {
         console.log("Error in cron job:", error);
     }
