@@ -2,7 +2,7 @@ const { schedule } = require('@netlify/functions');
 const { google } = require('googleapis');
 const sendEmail = require('./../../utils/email');
 
-async function sendEmailWithRetry(emailOptions, retries = 3, delayMs = 2000) {
+async function sendEmailWithRetry(emailOptions, retries = 1, delayMs = 2000) {
     for (let attempt = 1; attempt <= retries; attempt++) {
         try {
             await sendEmail(emailOptions);
@@ -20,7 +20,7 @@ async function sendEmailWithRetry(emailOptions, retries = 3, delayMs = 2000) {
     }
 }
 
-exports.handler = schedule('*/3 * * * *', async (event, context) => {
+exports.handler = schedule('*/2 * * * *', async (event, context) => {
     try {
         function delay(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
