@@ -128,10 +128,14 @@ exports.handler = schedule('*/2 * * * *', async (event, context) => {
                     }
 
                     if (userEmail && !await emailAlreadySent(userEmail, categoryKey, today)) {
-                        const subject = categoryKey === 'bday' ? `Happy Birthday, ${userFname}!` : `Happy Work Anniversary, ${userFname}!`;
+                        const subject = categoryKey === 'bday' ? `Happy Birthday, ${userFname}! 🎉` : `Happy Work Anniversary, ${userFname}! 🎉`;
+                        if(categoryKey === 'workanni') {
+                            var work_years = new Date().getFullYear() - new Date(row[4]).getFullYear();
+                            var abb = work_years === 1 ? 'st' : work_years === 2 ? 'nd' : work_years === 3 ? 'rd' : 'th';
+                        }
                         const message = categoryKey === 'bday'
-                            ? `Dear ${row[1]},\n\nWishing you a very happy birthday! 🎉...\n\nBest wishes,\nTeam Movya Infotech`
-                            : `Dear ${row[1]},\n\nCongratulations on your work anniversary! 🎉...\n\nBest wishes,\nTeam Movya Infotech`;
+                            ? `Dear ${row[1]},\n\nWishing you a very Happy Birthday! 🎂🎈\n\nWe value your special day just as much as we value you. On your birthday, we send you our warmest and most heartfelt wishes.\n\nWe are thrilled to be able to share this great day with you, and glad to have you as a valuable member of the team. We appreciate everything you’ve done to help us flourish and grow.\n\nOur entire corporate family at Movya Infotech wishes you a very happy birthday and wishes you the best on your special day!\n\nEnjoy your special day! 🎉\n\nBest wishes,\nTeam Movya Infotech`
+                            : `Dear ${row[1]},\n\nCongratulations on reaching your ${work_years}${abb} Work Anniversary! 🎊\n\nToday, we celebrate not just the time you've spent with us but also the remarkable impact you've made at Movya Infotech. Your expertise, dedication, and innovative spirit have been instrumental in driving our success and fostering a positive team environment.\n\nAs you look back on your journey, we hope you take pride in all you've accomplished. Your contributions have helped shape our company’s vision and achievements, and we are excited to continue this journey together.\n\n\Thank you for being an invaluable part of our team. Here’s to many more years of collaboration and success!\n\nBest wishes,\nTeam Movya Infotech`;
 
                         try {
                             await sendEmailWithRetry({
@@ -187,7 +191,7 @@ exports.handler = schedule('*/2 * * * *', async (event, context) => {
                             ? `Dear ${row[1]},\n\nWishing you a very happy birthday! 🎉...\n\nBest wishes,\nTeam Movya Infotech`
                             : categoryKey === 'workanni'
                                 ? `Dear ${row[1]},\n\nCongratulations on your work anniversary! 🎉...\n\nBest wishes,\nTeam Movya Infotech`
-                                : `Dear ${row[1]},\n\nWishing you and your family a joyous ${festivalName}! 🎉...\n\nBest wishes,\nTeam Movya Infotech`;
+                                : `Dear ${row[1]},\n\nWishing you and your family a joyous ${festivalName}! 🎉\n\nAs we approach the joyous occasion of ${festivalName}, I want to take a moment to extend my heartfelt wishes to you and your family. May this festival bring you an abundance of joy, love, and prosperity.\n\nThis is a wonderful time to celebrate and reflect on the moments that matter most. I hope you find time to enjoy the festivities and create cherished memories with your loved ones.\n\nWishing you a delightful and memorable ${festivalName} filled with happiness and warmth!\n\nBest wishes,\nTeam Movya Infotech`;
 
                         try {
                             await sendEmailWithRetry({
