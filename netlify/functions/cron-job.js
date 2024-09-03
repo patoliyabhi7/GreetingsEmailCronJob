@@ -20,7 +20,7 @@ async function sendEmailWithRetry(emailOptions, retries = 1, delayMs = 2000) {
     }
 }
 
-exports.handler = schedule('*/2 * * * *', async (event, context) => {
+exports.handler = schedule('*/2 3-6 * * *', async (event, context) => {
     try {
         function delay(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
@@ -45,6 +45,15 @@ exports.handler = schedule('*/2 * * * *', async (event, context) => {
 
         // Function to log email sending
         async function logEmailSent(category, date, email, festivalName = '') {
+            const now = new Date();
+            const istOffset = 330; // IST is UTC+5:30
+            const istTime = new Date(now.getTime() + (istOffset * 60 * 1000));
+            
+            const hours = String(istTime.getUTCHours()).padStart(2, '0');
+            const minutes = String(istTime.getUTCMinutes()).padStart(2, '0');
+            const seconds = String(istTime.getUTCSeconds()).padStart(2, '0');
+            const currentTime = `${hours}:${minutes}:${seconds}`;
+
             await googleSheets.spreadsheets.values.append({
                 auth,
                 spreadsheetId: mailLogSheetId,
@@ -56,7 +65,8 @@ exports.handler = schedule('*/2 * * * *', async (event, context) => {
                         `${category}-${festivalName}`, // include festival name in the category
                         date,
                         email,
-                        "yes"
+                        "yes",
+                        currentTime
                     ]]
                 }
             });
