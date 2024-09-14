@@ -20,7 +20,7 @@ async function sendEmailWithRetry(emailOptions, retries = 1, delayMs = 2000) {
     }
 }
 
-exports.handler = schedule('*/2 3-6 * * *', async (event, context) => {
+exports.handler = schedule('*/2 12-13 * * *', async (event, context) => {
     try {
         function delay(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
@@ -42,14 +42,14 @@ exports.handler = schedule('*/2 3-6 * * *', async (event, context) => {
         const spreadsheetId = "1psDuyomhJh80g4sKzlt3n2kdLip6eLAUmj8sDKocF90";
         const festivalSheetId = "1C-4dBkF91gh3Ag-MxYo7jVCQMjN831gdqcSfDrmOjzw";
         const mailLogSheetId = "1Hmz50dmt7OXGeMpJphrZbX63FuER4wSuVkkyz3qohDY";
-        
+        const customEmailSheetId = '1mM37AeBsYthtfhvoMBOCVLLVkr6M5EF61cwV82-GqpY';
 
         // Function to log email sending
         async function logEmailSent(category, date, email, festivalName = '') {
             const now = new Date();
             const istOffset = 330; // IST is UTC+5:30
             const istTime = new Date(now.getTime() + (istOffset * 60 * 1000));
-            
+
             const hours = String(istTime.getUTCHours()).padStart(2, '0');
             const minutes = String(istTime.getUTCMinutes()).padStart(2, '0');
             const seconds = String(istTime.getUTCSeconds()).padStart(2, '0');
@@ -130,7 +130,7 @@ exports.handler = schedule('*/2 3-6 * * *', async (event, context) => {
 
                     if (userEmail && !await emailAlreadySent(userEmail, categoryKey, today)) {
                         const subject = categoryKey === 'bday' ? `Happy Birthday, ${userFname}! 🎉` : `Happy Work Anniversary, ${userFname}! 🎉`;
-                        if(categoryKey === 'workanni') {
+                        if (categoryKey === 'workanni') {
                             var work_years = new Date().getFullYear() - new Date(row[4]).getFullYear();
                             var abb = work_years === 1 ? 'st' : work_years === 2 ? 'nd' : work_years === 3 ? 'rd' : 'th';
                         }
@@ -226,6 +226,56 @@ exports.handler = schedule('*/2 3-6 * * *', async (event, context) => {
             const festivalName = festival[0];
             await sendFesEmailsInChunks(rows.slice(1), 'festival', festivalName);
         }
+
+
+
+        // Function to send custom emails
+        async function sendCustomEmails(rows) {
+            const getCustomEmails = await googleSheets.spreadsheets.values.get({
+                auth,
+                spreadsheetId: customEmailSheetId,
+                range: "Sheet1",
+            });
+
+            const customEmails = getCustomEmails.data.values || [];
+            // console.log(customEmails)
+
+            for (const customEmail of customEmails) {
+                const [id, date, subject, body] = customEmail;
+
+                if (date === today) {
+                    const emailPromises = rows.map(async (row) => {
+                        const userEmail = row[2];
+                        const userFname = row[1].split(' ')[0];
+
+                        if (userEmail && !await emailAlreadySent(userEmail, 'custom', today, id)) {
+                            const personalizedSubject = subject?.replace('{name}', userFname) || subject;
+                            const personalizedBody = body?.replace('{name}', userFname) || body;
+
+                            try {
+                                await sendEmailWithRetry({
+                                    email: userEmail,
+                                    subject: personalizedSubject,
+                                    message: personalizedBody,
+                                });
+                                await logEmailSent('custom', today, userEmail, id);
+                                console.log(`Custom email sent to ${userEmail}`);
+                                await delay(2000);
+                            } catch (error) {
+                                console.error(`Error sending custom email to ${userEmail}: ${error.message}`);
+                            }
+                        }
+                    });
+                    await Promise.all(emailPromises);
+                }
+            }
+        }
+
+        // Send Custom Emails
+        await sendCustomEmails(rows.slice(1));
+
+
+
     } catch (error) {
         console.log("Error in cron job:", error);
     }
