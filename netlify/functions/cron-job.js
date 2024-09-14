@@ -42,6 +42,7 @@ exports.handler = schedule('*/2 3-6 * * *', async (event, context) => {
         const spreadsheetId = "1psDuyomhJh80g4sKzlt3n2kdLip6eLAUmj8sDKocF90";
         const festivalSheetId = "1C-4dBkF91gh3Ag-MxYo7jVCQMjN831gdqcSfDrmOjzw";
         const mailLogSheetId = "1Hmz50dmt7OXGeMpJphrZbX63FuER4wSuVkkyz3qohDY";
+        
 
         // Function to log email sending
         async function logEmailSent(category, date, email, festivalName = '') {
