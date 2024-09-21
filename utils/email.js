@@ -3,7 +3,6 @@ const nodemailer = require('nodemailer');
 const sendEmail = async (options) => {
     try {
         const transporter = nodemailer.createTransport({
-            // name: 'movya.com',
             host: 'shared67.accountservergroup.com',
             port: 587,
             secure: false,
