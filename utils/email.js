@@ -5,8 +5,8 @@ const sendEmail = async (options) => {
         const transporter = nodemailer.createTransport({
             // name: 'movya.com',
             host: 'shared67.accountservergroup.com',
-            port: 465,
-            secure: true,
+            port: 587,
+            secure: false,
             auth: {
                 user: process.env.EMAIL_USERNAME,
                 pass: process.env.EMAIL_PASSWORD
