@@ -20,7 +20,7 @@ async function sendEmailWithRetry(emailOptions, retries = 1, delayMs = 2000) {
     }
 }
 
-exports.handler = schedule('*/2 3-10 * * *', async (event, context) => {
+exports.handler = schedule('*/2 3-12 * * *', async (event, context) => {
     try {
         function delay(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
